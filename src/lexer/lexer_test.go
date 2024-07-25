@@ -16,25 +16,55 @@ type FormatterFunc func (format string, args ...any)
 func test_util_map_token_to_literal(tt token.TokenType) ExpectationMap {
     switch (tt) {
     case token.ASSIGN:
-        return ExpectationMap{ token.ASSIGN, "=" }
+        return ExpectationMap{ tt, "=" }
     case token.PLUS:
-        return ExpectationMap{token.PLUS, "+"}
+        return ExpectationMap{ tt, "+"}
     case token.LPAREN:
-        return ExpectationMap{token.LPAREN, "("}
+        return ExpectationMap{ tt, "("}
     case token.RPAREN:
-        return ExpectationMap{token.RPAREN, ")"}
+        return ExpectationMap{ tt, ")"}
     case token.LSQUIG:
-        return ExpectationMap{token.LSQUIG, "{"}
+        return ExpectationMap{ tt, "{"}
     case token.RSQUIG:
-        return ExpectationMap{token.RSQUIG, "}"}
+        return ExpectationMap{ tt, "}"}
     case token.COMMA:
-        return ExpectationMap{token.COMMA, ","}
+        return ExpectationMap{ tt, ","}
     case token.SEMICOLON:
-        return ExpectationMap{token.SEMICOLON, ";"}
+        return ExpectationMap{ tt, ";"}
     case token.LET:
-        return ExpectationMap{ token.LET, "let" }
+        return ExpectationMap{ tt, "let" }
+    case token.STAR:
+        return ExpectationMap{ tt, "*" } 
+    case token.DIVIDE:
+        return ExpectationMap{ tt, "/" }
+    case token.MINUS:
+        return ExpectationMap{ tt, "-" }
+    case token.BANG:
+        return ExpectationMap{ tt, "!" } 
+    case token.EQ:
+        return ExpectationMap{ tt, "=="}
+    case token.NOT_EQ:
+        return ExpectationMap{ tt, "!="}
+    case token.LT:
+        return ExpectationMap{ tt, "<"}
+    case token.LTE:
+        return ExpectationMap{ tt, "<="}
+    case token.GT:
+        return ExpectationMap{ tt, ">"}
+    case token.GTE:
+        return ExpectationMap{ tt, ">="}
+    case token.ELSE:
+        return ExpectationMap{ tt, "else" } 
+    case token.IF:
+        return ExpectationMap{ tt, "if" }
+    case token.RETURN:
+        return ExpectationMap{ tt, "return" }
+    case token.TRUE:
+        return ExpectationMap{ tt, "true" }
+    case token.FALSE:
+        return ExpectationMap{ tt, "false" }
     case token.EOF:
-        return ExpectationMap{token.EOF, ""}
+        return ExpectationMap{ tt, ""}
     }
     return ExpectationMap{}
 }
@@ -74,13 +104,23 @@ func TestNextToken(t *testing.T) {
     test_util_check_expected_results(lexer, tests, t.Fatalf)
 
     input = `let five = 5;
-    let ten = 10;
+        let ten = 10;
+        let add = fn(x, y) { x + y; };
+        let result = add(five, ten);
 
-    let add = fn(x, y) {
-        x + y;
-    };
+        !-/*5;
+        5 < 10 > 5;
 
-    let result = add(five, ten);`
+        if (5 < 10) { 
+            return true;
+        } else { 
+            return false;
+        }
+
+        10 == 10;
+        10 != 9;
+    `
+
 
 	lexer = New(input)
 
@@ -122,6 +162,47 @@ func TestNextToken(t *testing.T) {
         test_util_map_token_to_literal(token.COMMA),
         {token.IDENT, "ten"},
         test_util_map_token_to_literal(token.RPAREN),
+        test_util_map_token_to_literal(token.SEMICOLON),
+        test_util_map_token_to_literal(token.BANG),
+        test_util_map_token_to_literal(token.MINUS),
+        test_util_map_token_to_literal(token.DIVIDE),
+        test_util_map_token_to_literal(token.STAR),
+        {token.INT, "5"},
+        test_util_map_token_to_literal(token.SEMICOLON),
+
+        {token.INT, "5"},
+        test_util_map_token_to_literal(token.LT),
+        {token.INT, "10"},
+        test_util_map_token_to_literal(token.GT),
+        {token.INT, "5"},
+        test_util_map_token_to_literal(token.SEMICOLON),
+
+        test_util_map_token_to_literal(token.IF),
+        test_util_map_token_to_literal(token.LPAREN),
+        {token.INT, "5"},
+        test_util_map_token_to_literal(token.LT),
+        {token.INT, "10"},
+        test_util_map_token_to_literal(token.RPAREN),
+        test_util_map_token_to_literal(token.LSQUIG),
+        test_util_map_token_to_literal(token.RETURN),
+        test_util_map_token_to_literal(token.TRUE),
+        test_util_map_token_to_literal(token.SEMICOLON),
+
+        test_util_map_token_to_literal(token.RSQUIG),
+        test_util_map_token_to_literal(token.ELSE),
+        test_util_map_token_to_literal(token.LSQUIG),
+        test_util_map_token_to_literal(token.RETURN),
+        test_util_map_token_to_literal(token.FALSE),
+        test_util_map_token_to_literal(token.SEMICOLON),
+        test_util_map_token_to_literal(token.RSQUIG),
+        {token.INT, "10"},
+        test_util_map_token_to_literal(token.EQ),
+        {token.INT, "10"},
+        test_util_map_token_to_literal(token.SEMICOLON),
+
+        {token.INT, "10"},
+        test_util_map_token_to_literal(token.NOT_EQ),
+        {token.INT, "9"},
         test_util_map_token_to_literal(token.SEMICOLON),
     }
 

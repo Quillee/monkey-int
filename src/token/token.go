@@ -10,6 +10,19 @@ type Token struct {
 var keywords = map[string]TokenType {
     "fn": FUNCTION,
     "let": LET,
+    "true": TRUE,
+    "false": FALSE,
+    "if": IF,
+    "else": ELSE,
+    "return": RETURN,
+}
+
+func CheckKeyword(key string) (TokenType, bool) {
+    if val, ok := keywords[key]; ok {
+        return val, ok
+    }
+    
+    return IDENT, false
 }
 
 const (
@@ -23,6 +36,17 @@ const (
     // Operators
     ASSIGN = "="
     PLUS = "+"
+    MINUS = "-"
+    DIVIDE = "/"
+    STAR = "*"
+    BANG  = "!"
+    LT = "<"
+    LTE = "<="
+    GT = ">"
+    GTE = ">="
+    EQ = "=="
+    NOT_EQ = "!="
+
 
     // Delimiters
     COMMA = ","
@@ -35,5 +59,10 @@ const (
     // Keywords
     FUNCTION = "FUNCTION"
     LET = "LET"
+    RETURN = "RETURN"
+    IF = "IF"
+    ELSE = "ELSE"
+    TRUE = "TRUE"
+    FALSE = "FALSE"
 )
 
